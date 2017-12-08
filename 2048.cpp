@@ -14,8 +14,9 @@ using namespace std;
 
 int main()
 {
+	// declare Game object
 	Game g;
-	g.start_game();
+	g.start_game(); // start game
 
 	return 0;
 }

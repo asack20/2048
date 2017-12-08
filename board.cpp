@@ -60,7 +60,7 @@ void Board::start_board()
 
 	}
 
-	else
+	else // error message
 	{
 		cerr << "dimen must be initialized to an integer value" << 
 			" 2 or greater.\n";
@@ -76,29 +76,37 @@ bool Board::shift_tiles(int direction)
 	int new_points;
 	bool did_shift = false;
 	
-	int *vec = new int[dimen];
+	int *vec = new int[dimen]; // 1 col of board array
 	
-	switch(direction) 
+	switch(direction) // determine which direction was entered
 	{
     	case 0 : // up
-        	
-            for (int col = 0; col < dimen; col++)
+        	// all 4 cases perform similarly but with different order of loops
+            for (int col = 0; col < dimen; col++) // for each col
         	{
-        		for (int row = 0; row < dimen; row++)
+        		// copy row into vec in correct order so that direction 
+                // of shift is towards vec[0]
+                for (int row = 0; row < dimen; row++) 
         		{
-        			i = row;
+        			i = row; 
         			vec[i] = board[row][col];
         		}
         		
-        		single_shift(vec, new_points);
-        		score += new_points;
+        		// run single shift to perform shifting and point
+                // calculations on a single col/row
+                single_shift(vec, new_points); 
+        		score += new_points; // add points earned to total score
         		
+                // copy shifted vec back into board array
         		for (int row = 0; row < dimen; row++)
         		{
         			i = row;
-        			if (board[row][col] != vec[i])
+        			// if any changes occured, a shift did occur
+                    if (board[row][col] != vec[i])
         			{
         				did_shift = true;
+                        // only actually changes tiles that are different
+                        // from original board
         				board[row][col] = vec[i];
         			}
         		}
@@ -106,7 +114,7 @@ bool Board::shift_tiles(int direction)
          	break;
       	
       	case 1 : // right
-        	
+        	// see case 0 for comments
         	for (int row = 0; row < dimen; row++)
         	{
         		for (int col = 0; col < dimen; col++)
@@ -131,7 +139,7 @@ bool Board::shift_tiles(int direction)
       		break;
 
       	case 2 : // down
-      		
+            // see case 0 for comments
         	for (int col = 0; col < dimen; col++)
         	{
         		for (int row = 0; row < dimen; row++)
@@ -156,7 +164,7 @@ bool Board::shift_tiles(int direction)
       		break;
 
       	case 3 : // left
-      		
+      		// see case 0 for comments
         	for (int row = 0; row < dimen; row++)
         	{
         		for (int col = 0; col < dimen; col++)
@@ -186,19 +194,22 @@ bool Board::shift_tiles(int direction)
         	return did_shift;
 
 	}
-    if (did_shift)
+    // if a shift occured (the move was valid) add a new tile
+    if (did_shift) 
     {
     	// adds a random tile either 2 OR 4
         bool just_2 = false; 
         add_rand_tile(just_2);
     }
 
-    delete[] vec;
+    delete[] vec; // free up memory
 
     return did_shift;
 }
 
 // simulates shift to see if move is possible
+// similar to shift_tiles() but does not actually modify main board
+// or add to score
 bool Board::sim_shift_tiles(int direction, int &points)
 {
 
@@ -206,10 +217,12 @@ bool Board::sim_shift_tiles(int direction, int &points)
 	int new_points;
 	bool did_shift = false;
 	
-	points = 0;
+	points = 0; // points is a variable of just the points of the move
+    // that does not affect the main score
 
 	int *vec = new int[dimen];
 	
+    // pretty much same as code for shift_tiles()
 	switch(direction) 
 	{
     	case 0 : // up
@@ -223,7 +236,7 @@ bool Board::sim_shift_tiles(int direction, int &points)
         		}
         		
         		single_shift(vec, new_points);
-        		points += new_points;
+        		points += new_points; // add to points instead of score
         		
         		for (int row = 0; row < dimen; row++)
         		{
@@ -231,6 +244,7 @@ bool Board::sim_shift_tiles(int direction, int &points)
         			if (board[row][col] != vec[i])
         			{
         				did_shift = true;
+                        // doesn't copy vec back into board
         			}
         		}
         	}
@@ -315,10 +329,12 @@ bool Board::sim_shift_tiles(int direction, int &points)
 
 	}
 
-    delete[] vec;
+    delete[] vec; // free up memory
+    
+    // does not add tile
 
     return did_shift;
-	return false;
+	//return false; !!!!
 }
 
 
@@ -329,7 +345,7 @@ void Board::add_rand_tile(bool just_2)
 	int rand_row;
 	int rand_col;
 
-	if (just_2)
+	if (just_2) // does not have random chance of a 4
 	{
 		val = 2;
 	}
@@ -346,14 +362,14 @@ void Board::add_rand_tile(bool just_2)
 		}
 	}
 
-	do
+	do // loop through random coords until an empty tile is found
 	{
 		rand_row = rand() % dimen;
 		rand_col = rand() % dimen;
 	} while (board[rand_row][rand_col] != 0);
 
-	board[rand_row][rand_col] = val;
-
+	board[rand_row][rand_col] = val; // add val in that location
+ 
 	return;
 }
 
@@ -416,11 +432,13 @@ bool Board::check_free_tiles()
 {
 	bool free_tile = false;
 
+    // loop through each tile on board
 	for (int i = 0; i < dimen; i++)
 	{
 		for (int j = 0; i < dimen; j++)
 		{
-			if (board[i][j] == 0)
+			// if any are 0, free_tile is true
+            if (board[i][j] == 0)
 			{
 				free_tile = true;
 			}
@@ -447,19 +465,20 @@ bool Board::check_board_exists()
 // prints board and score to console with X's replacing 0's
 void Board::display_board()
 {
-	cout << "\nCurrent Score: " << score << endl;
+	cout << "\nCurrent Score: " << score << endl; // print score
 
-	for (int i = 0; i < dimen; i++)
+	// loop through each tile and print 
+    for (int i = 0; i < dimen; i++)
 	{
 		for (int j = 0; j < dimen; j++)
 		{
 			if (board[i][j] == 0)
 			{
-				cout << 'X' << '\t';
+				cout << 'X' << '\t'; // X is char for 0
 			}
 			else
 			{
-				cout << board[i][j] << '\t';
+				cout << board[i][j] << '\t'; // print the number
 			}
 		}
 		cout << endl;

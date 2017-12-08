@@ -33,11 +33,11 @@ void Game::start_game()
 
 	get_user_size(); // determine board size from user
 
-	f.read_file();
+	f.read_file(); 
 	b.start_board();
 
-	int high_score = f.get_top_score();
-
+	// Print current high score
+	int high_score = f.get_top_score(); 
 	cout << "\nStarting game! High Score is " << high_score << endl;
 
 	// main game loop
@@ -145,17 +145,24 @@ void Game::print_instructions()
 // prompts user for name and performs end of game tasls
 void Game::end_game()
 {
-	b.display_board();
+	b.display_board(); // display board one final time
 
+	// print final score
 	int score = b.get_score();
 	string name;
 	cout << "\nGame Over. Your final score was " << score << endl << endl;
 
+	// save current game score to file
 	cout << "Please enter your name for the high score list (no spaces) \n";
 	cin >> name;
 
 	f.add_score(name, score);
 	f.write_file();
+
+	// display high scores once more
+	f.read_file();
+	f.print_high_scores();
+
 	return;
 }
 
